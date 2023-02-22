@@ -2,7 +2,7 @@ from organizer import *
 import pandas as pd
 import requests as rq
 
-df = pd.read_csv('all_queries.csv')
+df = pd.read_csv('../data/all_queries.csv')
 start = "2023-02-20T10:59:25.479Z"
 end = "2023-02-20T19:59:25.479Z"
 step = "5s"
