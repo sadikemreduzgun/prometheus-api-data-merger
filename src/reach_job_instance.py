@@ -65,3 +65,5 @@ def reach_device():
     return domains
 
 
+print(reach_device())
+
