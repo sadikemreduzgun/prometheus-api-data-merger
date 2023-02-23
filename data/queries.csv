@@ -1,0 +1,32 @@
+	0
+Memory Used Percent	libvirt_domain_memory_stats_used_percent
+Total Memory inside VM	libvirt_domain_info_maximum_memory_bytes{}
+Available Memory İnside Working VM	libvirt_domain_memory_stats_usable_bytes{}
+Cache Memory	libvirt_domain_memory_stats_disk_cache_bytes{}
+Current Balloon Value	libvirt_domain_memory_stats_actual_balloon_bytes{}
+RSS value	libvirt_domain_memory_stats_rss_bytes{}
+Total CPU	libvirt_domain_info_virtual_cpus{}
+vCPU usage	avg by (domain) (irate(libvirt_domain_info_cpu_time_seconds_total{host=~"$compute", job=~"libvirt_exporter"}[30s])) * 100
+vCPU used Percentage	(avg by (domain) (irate(libvirt_domain_info_cpu_time_seconds_total{}[30s])) * 100)-0
+vCPU counts	libvirt_domain_info_virtual_cpus{}
+Network Traffic	irate(libvirt_domain_interface_stats_transmit_bytes_total{}[5m])
+Rate of Packages received on a network interface	rate(libvirt_domain_interface_stats_receive_packets_total{}[5m])
+Network dropped packages number	rate(libvirt_domain_interface_stats_transmit_drops_total{}[5m])
+Network packages number of errors received	rate(libvirt_domain_interface_stats_receive_errors_total{}[5m])
+Write Requests to a block device	irate(libvirt_domain_block_stats_write_requests_total{}[5m])
+Read Requests to a block device	irate(libvirt_domain_block_stats_read_requests_total{}[5m])
+Bytes written to a block device	irate(libvirt_domain_block_stats_write_bytes_total{}[5m])
+Bytes that are read from a block device	irate(libvirt_domain_block_stats_read_bytes_total{}[5m])
+Image Allocation	libvirt_domain_block_stats_allocation{}
+IOPS Read	rate(libvirt_domain_block_stats_read_requests_total{}[30s])
+IOPS Write	rate(libvirt_domain_block_stats_write_requests_total{}[30s])
+Throughput Read	rate(libvirt_domain_block_stats_read_bytes_total{}[30s])
+Throughput Write	rate(libvirt_domain_block_stats_write_bytes_total{}[30s])
+Network Recieved data (RX)	rate(libvirt_domain_interface_stats_receive_bytes_total{}[30s])
+Network Sent data (TX)	rate(libvirt_domain_interface_stats_transmit_bytes_total{}[30s])
+Network Received packets	rate(libvirt_domain_interface_stats_receive_packets_total{}[30s])
+Network Sent packets	rate(libvirt_domain_interface_stats_transmit_packets_total{}[30s])
+Error received on received packets	rate(libvirt_domain_interface_stats_receive_errors_total{}[30s])
+Error received on packets sent	rate(libvirt_domain_interface_stats_transmit_errors_total{}[30s])
+Drops of received packets	rate(libvirt_domain_interface_stats_receive_drops_total{}[30s])
+Drops of packets sent	rate(libvirt_domain_interface_stats_transmit_drops_total{}[30s])
