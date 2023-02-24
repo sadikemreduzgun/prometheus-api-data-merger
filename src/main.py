@@ -66,7 +66,7 @@ for query in df.iloc[:, 2]:
                     """ time stamp: ts, metric = m
                     ts (connect) m = a                          a
                                                             (connect)                   
-                    ts (connect) m = b                          b        = PART
+                    ts (connect) m = b                          b        =  PART
                                                             (connect)
                     ts (connect) m = c                          c
                     """
