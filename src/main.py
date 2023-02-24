@@ -4,7 +4,7 @@ import requests as rq
 import numpy as np
 
 
-df = pd.read_csv('all_queries.csv')
+df = pd.read_csv('../data/all_queries.csv')
 start = "2023-02-21T10:59:25.479Z"
 end = "2023-02-21T19:59:25.479Z"
 step = "5s"
