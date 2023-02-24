@@ -15,6 +15,7 @@ def curly_organizer(string, selection="{job=node-exporter}", step="5s"):
     # look at letters one by one and organize
     for letter in string:
         # when "{" is encountered, deletes until "}" and places "selection" in
+        # for some space allocation for instances entered
         if letter == "{":
             boole1 = True
             pass
@@ -91,32 +92,38 @@ def organize_instance(query, device = reach_device()[0]):
         if char == "(":
             found=True
             continue
+        # if it is found add it
         if found:
             
             check_word += char
             
-
+        # as the word return instance data
         if check_word == "node":
             
             return "node", "{instance="+f'{return_jobs_interfaces("node")}'+"}"
 
-
+        
         if check_word == "libvirt":
             
             return  "libvirt", "{instance=" + f'{return_jobs_interfaces("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
     return 0, 0
 
 
+# get parameters and create an array to be loaded at a dataframe
 def organize_dataframe(query, count, boole, temp_data, if_same,boole2,device_num=0,incount=0,temp_metrics=0,boole3 = True,save=0,saves=0,urs ="",lists=[]):
     
+    # if there is no data, dont start
     if len(query['data']['result']) == 0:
-        pass
+        continue
     
+    # as soon as reach some data, start
     else:
         count+=1
+        # reach metric values
         data = query['data']['result'][0]['values']
         #print(data)
-
+        
+        # create an array to be processed
         data = np.array(data)
         #print("\n\nQUERY WAS:\t\n", df.iloc[count,1])
 
@@ -126,48 +133,50 @@ def organize_dataframe(query, count, boole, temp_data, if_same,boole2,device_num
         # get time stamp data
         time_stamp = data[:,0][np.newaxis]
         #metric = metric.apply(lambda x: GiB(float(x)), axis=1)
-        # for executing just once
+        # for executing just once for 1. loop
         if boole:
 
             if incount == 4:
-                print("falsey---------------------------------------")
+                
                 boole=False
                 
-                          
+            # concat time stamp and metrics values next to each other
             temp_data = np.concatenate((time_stamp.T,metric.T),axis=1)
             #hold = 0
+            # for executing just once to save first data
             if boole2:
-                    print("boole2 çalıştı")
+                    
                     save = temp_data
                     boole2=False
                     lists.append(urs)
-                
+            
+            # for rest of execution, concat saved data vertically
             else:
-                    print("else executed")
+                   
                     save = np.concatenate((save, temp_data), axis=0)
             
-            print(save.shape)
+            #print(save.shape)
         # merge data collectively
         
         #elif incount<5:
+        # generally it is executed
         else:
-            print("in hereeeee ---------------------------------------") 
-            print(incount)
+            # for executing once by saving first data
             if boole3:
-                print("boole3 false")
+                
                 saves = metric.T 
                 boole3 = False
-                
+            
+            # connect metrics data of different VMs vertically
             else:
-                print("saved")
+                
                 saves = np.concatenate((saves,metric.T),axis = 0)
-                    
+            
+            # connecting vertically connacted data
             if incount == 4:
-                print(saves.shape)
-                print(temp_data.shape)
+                
                 save = np.concatenate((save,saves), axis = 1)
                 lists.append(urs)
 
-
-    print("here is ---*-*-*-*-*: ", boole)
+    # return processed data, for saving and returning after process
     return temp_data, count, boole, temp_metrics, boole2, boole3, save, saves, lists
