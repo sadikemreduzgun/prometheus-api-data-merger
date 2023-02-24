@@ -79,10 +79,10 @@ def organize_instance(query, device = reach_device()[0]):
     check_word = ""
     # if searched word is at the start immediately finish
     if query[0:4] == "node":
-        return "node", "{instance="+f'{return_jobs_interfaces("9100")}'+"}"
+        return "node", "{instance="+f'{return_jobs_interfaces("node")}'+"}"
 
     if query[0:7] == "libvirt":
-        return "libvirt","{instance=" + f'{return_jobs_interfaces("9177")}'+ ",domain=" + f'"{device}"'+"}"
+        return "libvirt","{instance=" + f'{return_jobs_interfaces("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
 
     
     # if not continue searching
@@ -98,16 +98,16 @@ def organize_instance(query, device = reach_device()[0]):
 
         if check_word == "node":
             
-            return "node", "{instance="+f'{return_jobs_interfaces("9100")}'+"}"
+            return "node", "{instance="+f'{return_jobs_interfaces("node")}'+"}"
 
 
         if check_word == "libvirt":
             
-            return  "libvirt", "{instance=" + f'{return_jobs_interfaces("9177")}'+ ",domain=" + f'"{device}"'+"}"
+            return  "libvirt", "{instance=" + f'{return_jobs_interfaces("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
     return 0, 0
 
 
-def organize_dataframe(query, count, boole, temp_data, if_same,boole2,device_num=0,incount=0,temp_metrics=0,boole3 = True,save=0,saves=0):
+def organize_dataframe(query, count, boole, temp_data, if_same,boole2,device_num=0,incount=0,temp_metrics=0,boole3 = True,save=0,saves=0,urs ="",lists=[]):
     
     if len(query['data']['result']) == 0:
         pass
@@ -130,15 +130,17 @@ def organize_dataframe(query, count, boole, temp_data, if_same,boole2,device_num
         if boole:
 
             if incount == 4:
+                print("falsey---------------------------------------")
                 boole=False
                 
-              
+                          
             temp_data = np.concatenate((time_stamp.T,metric.T),axis=1)
             #hold = 0
             if boole2:
                     print("boole2 çalıştı")
                     save = temp_data
                     boole2=False
+                    lists.append(urs)
                 
             else:
                     print("else executed")
@@ -149,20 +151,23 @@ def organize_dataframe(query, count, boole, temp_data, if_same,boole2,device_num
         
         #elif incount<5:
         else:
-            
+            print("in hereeeee ---------------------------------------") 
             print(incount)
             if boole3:
+                print("boole3 false")
                 saves = metric.T 
                 boole3 = False
                 
             else:
+                print("saved")
                 saves = np.concatenate((saves,metric.T),axis = 0)
                     
             if incount == 4:
                 print(saves.shape)
                 print(temp_data.shape)
                 save = np.concatenate((save,saves), axis = 1)
+                lists.append(urs)
 
 
-
-    return temp_data, count, boole, temp_metrics, boole2, boole3, save, saves
+    print("here is ---*-*-*-*-*: ", boole)
+    return temp_data, count, boole, temp_metrics, boole2, boole3, save, saves, lists
