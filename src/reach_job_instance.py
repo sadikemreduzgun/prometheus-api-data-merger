@@ -2,57 +2,48 @@ import yaml
 import json
 import requests as rq
 import json
+from reach_time import *
 
 
 # a function to return interfaces and jobs
-def return_jobs_interfaces(which=""):
-    # assign the path of prometheus's yaml file
-    path = "/etc/prometheus/prometheus.yml"
-    # a dictionary to keep data
-    jobs_instances = {}
-    # open yaml file
-    with open(path, "r") as file:
-        # check if sth is wrong
-        try:
-            # load data
-            data = yaml.safe_load(file)
-            # parse and load jobs and instances into the dictionary
-            for num in range(len(data["scrape_configs"])):
-                jobs_instances[data["scrape_configs"][num]["job_name"]] = data["scrape_configs"][num]["static_configs"][0]["targets"][0]
-        
-        # be sure nothing is wrong
-        except yaml.YAMLError as exc:
-            print(exc)
-    # close file
-    file.close()
-
-    if len(which) != 0:
-        for var in jobs_instances.values():
-            check_word = ""
-            found = False
-            for char in var:
+def return_jobs_interfaces(which="",start=give_default_dates()[1],end=give_default_dates()[0]):
     
-                if char == ":":
-                    found=True
-                    continue
+    query="node_load1"
+    url = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=30s"
 
-                if found:
-                    check_word += char
-                    
-                if str(check_word) == which:
-                    
-                    return f'"{var}"'
-                    break
+    data = rq.get(url)
+    data = data.json()
+    if which == "node":
+        query="node_load1"
+        url = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=30s"
+
+        data = rq.get(url)
+        data = data.json()
+        result = data['data']['result'][0]['metric']['instance']
+        return f'"{result}"'
+    
+    elif which == "libvirt":
+
+        query="libvirt_domain_block_stats_allocation"
+        url = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=30s"
+
+        data = rq.get(url)
+        data = data.json()
+
+        result = data['data']['result'][0]['metric']['instance']
+
+        return f'"{result}"'
+        #data = json.dumps(data, indent=4)
+
     else:
+        return -1
 
-        return f'"{jobs_instances}"'
 
-
-def reach_device():
+def reach_device(start=give_default_dates()[1],end=give_default_dates()[0]):
 
     domains = []
     query = "libvirt_domain_block_stats_allocation"
-    url = f"http://localhost:9090/api/v1/query?query={query}"
+    url = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=3m"
         
     data = rq.get(url)
     data = data.json()
@@ -65,5 +56,4 @@ def reach_device():
     return domains
 
 
-print(reach_device())
-
+#print(reach_device())
