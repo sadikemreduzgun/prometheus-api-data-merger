@@ -4,11 +4,11 @@ import requests as rq
 import numpy as np
 
 # read csv which contains queries
-df = pd.read_csv('all_queries.csv')
+df = pd.read_csv('../data/all_queries.csv')
 # get default-recent time data
 start, end = give_default_dates()
-# start = "2023-02-21T10:59:25.479Z"
-# end = "2023-02-21T19:59:25.479Z"
+start = "2023-02-21T10:59:25.479Z"
+end = "2023-02-21T19:59:25.479Z"
 # define default step
 step = "5s"
 # define a boolean to be used to run a statement for once
@@ -48,7 +48,7 @@ for query in df.iloc[:, 2]:
             # hold metrics data
             temp_metrics = metrics
             # move depending on if data came
-            if len(temp_metric['data']['result']) == 0:
+            if len(temp_metrics['data']['result']) == 0:
                 pass
             # if there is data, go on
             else:
@@ -129,7 +129,7 @@ for query in df.iloc[:, 2]:
             if len(data['data']['result']) == 0:
                 continue
 
-        except error:
+        except:
             continue
         # parse data
         all_data = np.array(data['data']['result'][0]['values'])
@@ -154,11 +154,9 @@ try:
     # load data into a dataframe
     df = pd.DataFrame(temp_data2)
     # save data in csv format
-    df.to_csv('node_metrics.csv')
+    df.to_csv('../out/node_metrics.csv')
     print("Ma Lord! I saved that uum... ")
-    sleep(1)
     print("...")
-    sleep(1)
     print("huh! Node data!")
 except error:
     print("An error occured while loading file into df and saving file: ", error)
@@ -186,7 +184,7 @@ try:
     df = df[cols]
     
     # save data into a csv file
-    df.to_csv('libvirt_data.csv')
+    df.to_csv('../out/libvirt_data.csv')
     print("Sir! I saved that lillb... libvart... libvirt data!")
 
     # save dataframe into new created cs
