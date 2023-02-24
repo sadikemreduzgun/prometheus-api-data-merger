@@ -87,7 +87,7 @@ def organize_instance(query, device = reach_device()[0]):
     # if first 4 letters form node, return instance which is created
     if query[0:4] == "node":
         # return instance created by return_instance function
-        return "node", "{instance="+f'{return_instance("node")}'+"}"
+        return "node", "{instance="+f'{return_jobs_interfaces("node")}'+"}"
     # if first 7 letters form libvirt, return instance which is created
     if query[0:7] == "libvirt":
         # return instance created bt return_instance function
@@ -117,56 +117,3 @@ def organize_instance(query, device = reach_device()[0]):
             return  "libvirt", "{instance=" + f'{return_jobs_interfaces("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
     # if can't be found return error
     return -1, -1
-
-
-# organize libvirt data
-def organize_dataframe(query, count, boole, temp_data, if_same,boole2,device_num=0,incount=0,temp_metrics=0,boole3 = True,save=0,saves=0,urs ="",lists=[]):
-    
-    if len(query['data']['result']) == 0:
-        pass
-    
-    else:
-        count+=1
-        data = query['data']['result'][0]['values']
-
-        data = np.array(data)
-
-        metric  = data[:,1][np.newaxis]
-
-        time_stamp = data[:,0][np.newaxis]
-        # for executing just once
-        if boole:
-
-            if incount == 4:
-                boole=False
-                
-                          
-            temp_data = np.concatenate((time_stamp.T,metric.T),axis=1)
-            #hold = 0
-            if boole2:
-                    save = temp_data
-                    boole2=False
-                    lists.append(urs)
-                
-            else:
-                    save = np.concatenate((save, temp_data), axis=0)
-            
-            print(save.shape)
-        # merge data collectively
-        
-        #elif incount<5:
-        else:
-
-            if boole3:
-                saves = metric.T 
-                boole3 = False
-                
-            else:
-                saves = np.concatenate((saves,metric.T),axis = 0)
-                    
-            if incount == 4:
-                save = np.concatenate((save,saves), axis = 1)
-                lists.append(urs)
-
-
-    return temp_data, count, boole, temp_metrics, boole2, boole3, save, saves, lists
