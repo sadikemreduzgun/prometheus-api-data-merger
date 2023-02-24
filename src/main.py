@@ -33,7 +33,7 @@ for query in df.iloc[:,2]:
     if check == "libvirt":
         in_count = 1
         for device in devices:
-            print("sadasd: ", in_count)
+            
             temp, instance = organize_instance(query, device)
             metrics = curly_organizer(query, instance, step)
             metrics = organize_url(metrics, start, end)
@@ -43,16 +43,8 @@ for query in df.iloc[:,2]:
             hold = count
             
             if_same = (hold_query == query)
-                        
-            print(if_same)
+                       
             temp_data, count, boole, mets, boole2, boole3,save,saves,listr = organize_dataframe(metrics,count ,boole, temp_data, if_same,boole2, len(devices),in_count, mets, boole3,save,saves,query,listr)
-            print(hold,count)
-            if hold != count:
-                try:
-                    pass
-                    #titles.append(device +" : " + df.iloc[count,0])
-                except:
-                    print("whooooa!")
             
             in_count += 1
         titles.append(query)
@@ -88,19 +80,15 @@ for query in df.iloc[:,2]:
         else:
     
             temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
-            print(hold,count)
-    #    if hold != count:
-     #       try:
-      #          titles.append(device +" : " + df.iloc[count,0])
-       #     except:
-        #        print("whooooa!")
-    
+        
     hold_query = query
 
+try:
+    df = pd.DataFrame(temp_data2)
+    df.to_csv('nodedede.csv')
+except:
+    pass
 
-df = pd.DataFrame(temp_data2)
-df.to_csv('nodedede.csv')
-print(listr)
 # start title list with one title which is the same for all
 # a function to convert byte into megabyte
 def div(x):
@@ -109,8 +97,6 @@ def div(x):
     y=y+"Mb"
     return y
 
-print(len(titles))
-print(titles)
 # get data into dataframe object
 #dataframe = pd.DataFrame(save)
 try:
