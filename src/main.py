@@ -139,6 +139,7 @@ for query in df.iloc[:, 2]:
         metric = all_data[:, 1][np.newaxis]
         # get time stamp data
         time_stamp = all_data[:, 0][np.newaxis]
+        titles_node.append(query)
         # metric = metric.apply(lambda x: GiB(float(x)), axis=1)
         # for executing just once
         if two_crap_boolean:
@@ -149,11 +150,8 @@ for query in df.iloc[:, 2]:
         else:
     
             temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
-            titles_node.append(query)
+            #titles_node.append(query)
 
-print(len(titles_node))
-titles_node.append("sadas")
-#titles_node.append("asdas")
 # save node exporter data
 try:
     # load data into a dataframe
