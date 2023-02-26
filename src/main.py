@@ -20,6 +20,7 @@ two_crap_boolean = True
 
 # define a list for to store columns names
 titles = ["time_stamp"]
+titles_node = ["time_stamp"]
 
 # read queries, organize them and gather their values
 for query in df.iloc[:, 2]:
@@ -133,7 +134,7 @@ for query in df.iloc[:, 2]:
             continue
         # parse data
         all_data = np.array(data['data']['result'][0]['values'])
-    
+        
         # get metric data
         metric = all_data[:, 1][np.newaxis]
         # get time stamp data
@@ -148,22 +149,27 @@ for query in df.iloc[:, 2]:
         else:
     
             temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
+            titles_node.append(query)
 
+print(len(titles_node))
+titles_node.append("sadas")
+#titles_node.append("asdas")
 # save node exporter data
 try:
     # load data into a dataframe
-    df = pd.DataFrame(temp_data2)
+    df = pd.DataFrame(temp_data2,columns=titles_node)
     # save data in csv format
     df.to_csv('../out/node_metrics.csv')
     print("Ma Lord! I saved that uum... ")
     print("...")
     print("huh! Node data!")
-except error:
-    print("An error occured while loading file into df and saving file: ", error)
+except:
+    print("An error occured while loading file into df and saving file! ")
 # get data into dataframe object
 # dataframe = pd.DataFrame(save)
 
 # save libvirt exporter data
+print(len(titles))
 try:
     # load save data into a dataframe
     df = pd.DataFrame(save, columns=titles)
@@ -190,7 +196,7 @@ try:
     # save dataframe into new created cs
     # dataframe.to_csv('last_state.csv')
 
-except error:
+except:
 
-    print("Error while loading into csv file: ", error)
+    print("Error while loading into libvirt's csv file: ")
     pass
