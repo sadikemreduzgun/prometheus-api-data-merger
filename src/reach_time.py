@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
 
-def give_default_dates():
+def give_default_dates(days=2):
     # get date one day ago
-    currentDateAndTime = datetime.now()
+    currentDateAndTime = datetime.now() - timedelta(days)
     # get date 1 day and 5 mins. ago
-    current_minus_5_min = (datetime.now() - timedelta(days=1,minutes=5))
+    current_minus_5_min = (datetime.now() - timedelta(days+1,minutes=5))
 
     # turn date into string
     end = str(currentDateAndTime.date())
@@ -23,6 +23,5 @@ def give_default_dates():
     return start, end
 
 
-print(give_default_dates())
 # 2023-02-21T10:59:25.479Z
 # Output: The current date and time is 2022-03-19 10:05:39.482383
