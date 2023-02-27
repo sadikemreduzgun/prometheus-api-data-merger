@@ -4,7 +4,7 @@
 #### In data folder there is all_queries csv file. It contains node exporter and libvirt exporter queries.
 #### In src file there are codes. In python file, organzier.py there are functions to organize urls, instances, queries.
 
-⚙️ curly_organizer function deletes statements in selector: "{}",and time selector: "[]". curly_organizer puts selected instance, time selector, device name.
+⚙️ curly_organizer function deletes statements in selector: "{ }",and time selector: "[ ]". curly_organizer puts selected instance, time selector, device name.
 
 ⚙️ organize_url function is used to some problems at query and prevent the mess of characters like " + ", " " ", " * ". Because generally operations like addition on query can't be done. 
 
