@@ -6,14 +6,14 @@ import numpy as np
 # read csv which contains queries
 df = pd.read_csv('../data/all_queries.csv')
 # get default-recent time data
-# start, end = give_default_dates()
+#start, end = give_default_dates()
 start = "2023-02-21T10:59:25.479Z"
 end = "2023-02-21T19:59:25.479Z"
 # define default step
 step = "5s"
 # define a boolean to be used to run a statement for once
 one_crap_boolean = True
-# get Virtual machine names
+# get Virtual machine names 
 devices = reach_device(start,end)
 # a weird boolean too, to execute a statement once
 two_crap_boolean = True
@@ -23,7 +23,11 @@ titles = ["time_stamp"]
 titles_node = ["time_stamp"]
 
 # read queries, organize them and gather their values
-for query in df.iloc[:, 2]:
+#df.iloc[:, 2], df.iloc[:, 1]
+for name, col in df.iterrows():
+    
+    query_name = col["query_name"]    
+    query = col["query"]
     # booleans to execute a statement for each loop turn
     three_crap_boolean = True
     four_crap_boolean = True
@@ -107,7 +111,7 @@ for query in df.iloc[:, 2]:
                     if in_count == len(devices):
                         save = np.concatenate((save, saves), axis=1)
                         # append queries into titles
-                        titles.append(query)
+                        titles.append(query_name)
             # increment at the end of devices loop
             in_count += 1
 
@@ -139,7 +143,7 @@ for query in df.iloc[:, 2]:
         metric = all_data[:, 1][np.newaxis]
         # get time stamp data
         time_stamp = all_data[:, 0][np.newaxis]
-        titles_node.append(query)
+        titles_node.append(query_name)
         # metric = metric.apply(lambda x: GiB(float(x)), axis=1)
         # for executing just once
         if two_crap_boolean:
