@@ -16,9 +16,16 @@
 
 ## Required Packages ❗
 ```pip
-pip install requests==2.25.1
-pip install pandas==1.5.3
+pip install certifi==2022.12.7
+pip install charset-normalizer==3.0.1
+pip install idna==3.4
 pip install numpy==1.24.2
+pip install pandas==1.5.3
+pip install python-dateutil==2.8.2
+pip install pytz==2022.7.1
+pip install requests==2.28.2
+pip install six==1.16.0
+pip install urllib3==1.26.14
 ```
 built-in packages like: datetime, json
 
