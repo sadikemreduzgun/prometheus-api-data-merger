@@ -70,3 +70,4 @@ def reach_device(start=give_default_dates()[0],end=give_default_dates()[1]):
     
     # return domain names(virtual machine names)
     return domains
+
