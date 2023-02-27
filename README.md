@@ -1,4 +1,4 @@
-# Get Node Exporter and Libvirt Exporter metrics using requests
+# Get Node Exporter and Libvirt Exporter metrics using Prometheus API
 
 ## A Quick Explanation:
 #### In data folder there is all_queries csv file. It contains node exporter and libvirt exporter queries.
