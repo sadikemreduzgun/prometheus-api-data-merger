@@ -23,7 +23,7 @@ def give_default_dates(days=1):
 
     query = "libvirt_domain_block_stats_allocation"
     url_lib = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=3m"
-    query="node_load1"
+    query = "node_load1"
     url_node = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=30s"
 
     # get data using api
