@@ -15,7 +15,7 @@
 ⚙️ main.py uses mentioned-above functions. It creates dataframes by performing some operations(explained in code) and saves them.
 
 ## Required Packages ❗
-```pip
+```
 certifi==2022.12.7
 charset-normalizer==3.0.1
 idna==3.4
@@ -28,7 +28,7 @@ six==1.16.0
 urllib3==1.26.14
 ```
 ### to install:
-```
+```pip
 pip install certifi==2022.12.7
 pip install charset-normalizer==3.0.1
 pip install idna==3.4
