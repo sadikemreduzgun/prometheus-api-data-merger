@@ -6,7 +6,7 @@ import numpy as np
 # read csv which contains queries
 df = pd.read_csv('../data/all_queries.csv')
 # get default-recent time data
-start, end = give_default_dates()
+# start, end = give_default_dates()
 start = "2023-02-21T10:59:25.479Z"
 end = "2023-02-21T19:59:25.479Z"
 # define default step
@@ -14,11 +14,11 @@ step = "5s"
 # define a boolean to be used to run a statement for once
 one_crap_boolean = True
 # get Virtual machine names
-devices = reach_device()
+devices = reach_device(start,end)
 # a weird boolean too, to execute a statement once
 two_crap_boolean = True
 
-# define a list for to store columns names
+# define lists for to store columns names
 titles = ["time_stamp"]
 titles_node = ["time_stamp"]
 
@@ -151,7 +151,6 @@ for query in df.iloc[:, 2]:
     
             temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
             #titles_node.append(query)
-
 # save node exporter data
 try:
     # load data into a dataframe
@@ -159,15 +158,14 @@ try:
     # save data in csv format
     df.to_csv('../out/node_metrics.csv')
     print("Ma Lord! I saved that uum... ")
-    print("...")
     print("huh! Node data!")
 except:
-    print("An error occured while loading file into df and saving file! ")
+    print("An error occured while loading node data into df or saving to file! ")
 # get data into dataframe object
 # dataframe = pd.DataFrame(save)
 
 # save libvirt exporter data
-print(len(titles))
+
 try:
     # load save data into a dataframe
     df = pd.DataFrame(save, columns=titles)
@@ -189,12 +187,12 @@ try:
     
     # save data into a csv file
     df.to_csv('../out/libvirt_data.csv')
-    print("Sir! I saved that lillb... libvart... libvirt data!")
+    print("Sir! I saved that lillb... libvart... libvirt data! ")
 
     # save dataframe into new created cs
     # dataframe.to_csv('last_state.csv')
 
 except:
 
-    print("Error while loading into libvirt's csv file: ")
+    print("Error while loading the data into or saving the libvirt's csv file! ")
     pass
