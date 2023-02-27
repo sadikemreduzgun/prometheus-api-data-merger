@@ -27,8 +27,6 @@ pip install requests==2.28.2
 pip install six==1.16.0
 pip install urllib3==1.26.14
 ```
-built-in packages like: datetime, json
-
 
 ## To Run
 👓 Just run main.py Python file after getting required packages downloaded. If everything goes correctly, you will see 2 csv files which contain metrics data in the folder named as "out". If some error occurs, error will be printed. 
