@@ -15,15 +15,11 @@
 ⚙️ main.py uses mentioned-above functions. It creates dataframes by performing some operations(explained in code) and saves them.
 
 ## Required Packages ❗
-requests :
-pip install requests
-
-pandas:
-pip install pandas
-
-numpy:
-pip install numpy
-
+'''
+pip install requests==2.25.1
+pip install pandas==1.5.3
+pip install numpy==1.24.2
+'''
 built-in packages like: datetime, json
 
 
