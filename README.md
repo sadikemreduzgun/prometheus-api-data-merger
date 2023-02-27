@@ -26,8 +26,9 @@ pytz==2022.7.1
 requests==2.28.2
 six==1.16.0
 urllib3==1.26.14
-
+```
 #to install:
+```
 pip install certifi==2022.12.7
 pip install charset-normalizer==3.0.1
 pip install idna==3.4
