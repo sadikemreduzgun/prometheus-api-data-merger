@@ -161,8 +161,8 @@ try:
     df = pd.DataFrame(temp_data2,columns=titles_node)
     # save data in csv format
     df.to_csv('../out/node_metrics.csv')
-    print("Ma Lord! I saved that uum... ")
-    print("huh! Node data!")
+    print("Success of extracting node exporter data")
+    
 except:
     print("An error occured while loading node data into df or saving to file! ")
 # get data into dataframe object
@@ -191,7 +191,7 @@ try:
     
     # save data into a csv file
     df.to_csv('../out/libvirt_data.csv')
-    print("Sir! I saved that lillb... libvart... libvirt data! ")
+    print("Success of extracting libvirty data.")
 
     # save dataframe into new created cs
     # dataframe.to_csv('last_state.csv')
