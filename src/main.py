@@ -15,9 +15,9 @@ df = pd.read_csv('../data/all_queries.csv')
 #start = "2023-02-27T06:22:25.479Z"
 #end= "2023-02-28T07:39:25.479Z"
 start, end = give_default_dates()
-
+queries = []
 # define default step and query function step
-step = "15s"
+step = "20s"
 step_func = "5s"
 # define a boolean to be used to run a statement for once
 one_crap_boolean = True
@@ -65,10 +65,11 @@ for name, col in df.iterrows():
             
             try:
                 if len(temp_metrics['data']['result']) == 0:
-
+                    now = str(datetime.now())
                     # save queries which returns no data
-                    if ("libvirt -> "+query_name) not in non_saved_log:      
-                        non_saved_log.append("libvirt -> "+query_name)
+                    if query_name not in queries:     
+                        queries.append(query_name)
+                        non_saved_log.append(str(datetime.now()) + "\tlibvirt -> " + query_name)
                         continue
                 else:
                     # parse and dig into data
@@ -129,7 +130,7 @@ for name, col in df.iterrows():
 
             except:
                 print("Potential time error. Please check if start and end time relevant. ")
-                non_saved_log.append("ERROR IN MAIN LOOP!")
+                non_saved_log.append("an error occured: \t" + str(datetime.now()) + "\t ERROR IN MAIN LOOP!")
             # if there is data, go on
  
             # increment at the end of devices loop
@@ -151,14 +152,11 @@ for name, col in df.iterrows():
         data = metrics.json()
         try:
             if len(data['data']['result']) == 0:
-                non_saved_log.append("node -> " + query_name)
+                non_saved_log.append(str(datetime.now())+"\tnode -> " + query_name)
                 continue
         except:
-            print("\n")
-            print(":::: ", data)
-            print("\n")
             print("Potential time error. Please check if start and end times relevant.")
-            non_saved_log.append("ERROR IN MAIN LOOP! ")
+            non_saved_log.append("an error occured:\tERROR IN MAIN LOOP! ")
             continue
         # parse data
         all_data = np.array(data['data']['result'][0]['values'])
@@ -170,14 +168,17 @@ for name, col in df.iterrows():
         titles_node.append(query_name)
         # metric = metric.apply(lambda x: GiB(float(x)), axis=1)
         # for executing just once
+        
         if two_crap_boolean:
             temp_data2 = np.concatenate((time_stamp.T, metric.T), axis=1)
             two_crap_boolean = False
 
         # merge data collectively
         else:
-    
-            temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
+            try:
+                temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
+            except:
+                print(-1)
             #titles_node.append(query)
 
 # save node exporter data
@@ -190,7 +191,7 @@ try:
     
 except:
     with open('../var/log.txt', 'w') as f:
-        f.write("An error occured while loading node data into df or saving to file!\n"+ str(datetime.now()))
+        f.write("An error occured while loading node data into df or saving to file! "+ str(date.today()))
         f.write('\n')
         f.close()
 
@@ -226,13 +227,16 @@ try:
     # dataframe.to_csv('last_state.csv')
 
 except:
-    with open('../var/log.txt', 'w') as f:
-        f.write("Error while loading the data into or saving the libvirt's csv file!\t"+ str(datetime.now()))
+    with open('../var/log.txt', 'a') as f:
+        f.write("Error while loading the data into or saving the libvirt's csv file! "+ str(date.today()))
         f.write('\n')
         f.close()
 
 with open('../var/log.txt', 'w') as f:
     for elm in non_saved_log:
-        f.write("\tquery returned no data: \t"+ str(datetime.now()))
-        f.write("\t" + elm)
+        if "ERROR" in elm.split(" "):
+            f.write(elm)
+        else: 
+            f.write("query returned no data: ")
+            f.write("\t" + elm)
         f.write('\n')
