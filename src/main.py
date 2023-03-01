@@ -2,26 +2,35 @@ from organizer import *
 import pandas as pd
 import requests as rq
 import numpy as np
+from datetime import date
+
 
 # read csv which contains queries
 df = pd.read_csv('../data/all_queries.csv')
+
 # get default-recent time data
-#start, end = give_default_dates()
-start = "2023-02-21T10:59:25.479Z"
-end = "2023-02-21T19:59:25.479Z"
-# define default step
-step = "5s"
+
+#start = "2023-02-21T10:59:25.479Z"
+#end = "2023-02-21T19:59:25.479Z"
+#start = "2023-02-27T06:22:25.479Z"
+#end= "2023-02-28T07:39:25.479Z"
+start, end = give_default_dates()
+
+# define default step and query function step
+step = "15s"
+step_func = "5s"
 # define a boolean to be used to run a statement for once
 one_crap_boolean = True
 # get Virtual machine names 
 devices = reach_device(start,end)
 # a weird boolean too, to execute a statement once
 two_crap_boolean = True
-
-# define lists for to store columns names
+# define a list to store query names which returns no data and save them in var/log.txt
+non_saved_log = []
+# define lists for to store column names
 titles = ["time_stamp"]
 titles_node = ["time_stamp"]
-
+title_count_lib=0
 # read queries, organize them and gather their values
 #df.iloc[:, 2], df.iloc[:, 1]
 for name, col in df.iterrows():
@@ -43,75 +52,86 @@ for name, col in df.iterrows():
             # get instance to run curly organizer function
             temp, instance = organize_instance(query, device)
             # run curly organizer delete instance and replace it
-            url = curly_organizer(query, instance, step)
+            url = curly_organizer(query, instance, step_func)
             # get data after organizing the url
-            url = organize_url(url, start, end)
+            url = organize_url(url, start, end,step)
             # get data using requests modul
             metrics = rq.get(url)
             # turn data into dictionary
             metrics = metrics.json()
             # hold metrics data
             temp_metrics = metrics
-            # move depending on if data came
-            if len(temp_metrics['data']['result']) == 0:
-                pass
-            # if there is data, go on
-            else:
-                # parse and dig into data
-                data = metrics['data']['result'][0]['values']
-                # load data into a numpy array
-                data = np.array(data)
-                # get metric values
-                metric = data[:, 1][np.newaxis]
-                # get time stamp values
-                time_stamp = data[:, 0][np.newaxis]
-                # for executing for 4 times
-                if one_crap_boolean:
-                    # to create following structure:
-                    """ time stamp: ts, metric = m
-                    ts (connect) m = a                          a
-                                                            (connect)                   
-                    ts (connect) m = b                          b        =  PART
-                                                            (connect)
-                    ts (connect) m = c                          c
-                    """
-                    if in_count == 4:
-                        one_crap_boolean = False
-                        # 3 vertical, 4 horizontal connections done
-                    # horizontally connect
-                    temp_data = np.concatenate((time_stamp.T, metric.T), axis=1)
+            # move depending on if data is reached
+            
+            try:
+                if len(temp_metrics['data']['result']) == 0:
 
-                    # execute for once for first element to connect second element
-                    if three_crap_boolean:
-                        save = temp_data
-                        three_crap_boolean = False
-                        titles.append(query)
-                    # vertically connect horizontally connected elements
-                    else:
-                        save = np.concatenate((save, temp_data), axis=0)
-
-                # merge data collectively
+                    # save queries which returns no data
+                    if ("libvirt -> "+query_name) not in non_saved_log:      
+                        non_saved_log.append("libvirt -> "+query_name)
+                        continue
                 else:
+                    # parse and dig into data
+                    data = metrics['data']['result'][0]['values']
+                    # load data into a numpy array
+                    data = np.array(data)
+                    # get metric values
+                    metric = data[:, 1][np.newaxis]
+                    # get time stamp values
+                    time_stamp = data[:, 0][np.newaxis]
+                    # for executing for 4 times
+                    if one_crap_boolean:
                     # to create following structure:
-                    """ Connecting to PART above
-                                       metric1
-                                      (connect)
-                        PART = PART +  metric2
-                                      (connect)
-                                       metric3
-                    """
-                    # run once and store first element
-                    if four_crap_boolean:
-                        saves = metric.T 
-                        four_crap_boolean = False
-                    # perform operation mentioned above
+                        """ time stamp: ts, metric = m
+                        ts (connect) m = a                          a
+                                                                (connect)                   
+                        ts (connect) m = b                          b        =  PART
+                                                                (connect)
+                        ts (connect) m = c                          c
+                        """
+                        if in_count == 4:
+                            one_crap_boolean = False
+                            # 3 vertical, 4 horizontal connections done
+                        # horizontally connect
+                        temp_data = np.concatenate((time_stamp.T, metric.T), axis=1)
+
+                        # execute for once for first element to connect second element
+                        if three_crap_boolean:
+                            save = temp_data
+                            three_crap_boolean = False
+                            titles.append(query)
+                        # vertically connect horizontally connected elements
+                        else:
+                            save = np.concatenate((save, temp_data), axis=0)
+
+                    # merge data collectively
                     else:
-                        saves = np.concatenate((saves, metric.T), axis=0)
-                    # if devices' loops' end is reached, add connected metrics
-                    if in_count == len(devices):
-                        save = np.concatenate((save, saves), axis=1)
-                        # append queries into titles
-                        titles.append(query_name)
+                        # to create following structure:
+                        """ Connecting to PART above
+                                           metric1
+                                          (connect)
+                            PART = PART +  metric2
+                                          (connect)
+                                           metric3
+                        """
+                        # run once and store first element
+                        if four_crap_boolean:
+                            saves = metric.T 
+                            four_crap_boolean = False
+                        # perform operation mentioned above
+                        else:
+                            saves = np.concatenate((saves, metric.T), axis=0)
+                        # if devices' loops' end is reached, add connected metrics
+                        if in_count == len(devices):
+                            save = np.concatenate((save, saves), axis=1)
+                            # append queries into titles
+                            titles.append(query_name)
+
+            except:
+                print("Potential time error. Please check if start and end time relevant. ")
+                non_saved_log.append("ERROR IN MAIN LOOP!")
+            # if there is data, go on
+ 
             # increment at the end of devices loop
             in_count += 1
 
@@ -120,21 +140,25 @@ for name, col in df.iterrows():
         # get instance to run curly organizer function
         temp, instance = organize_instance(query)
         # run curly organizer delete instance and replace it
-        url = curly_organizer(query, instance, step)
+        url = curly_organizer(query, instance, step_func)
         # get data after organizing the url
-        url = organize_url(url, start, end)
+        url = organize_url(url, start, end, step)
         # hold URL to be used later
         hold = url
         # get data using requests modul
         metrics = rq.get(url)
         # load data into json
         data = metrics.json()
-        
-        try: 
+        try:
             if len(data['data']['result']) == 0:
+                non_saved_log.append("node -> " + query_name)
                 continue
-
         except:
+            print("\n")
+            print(":::: ", data)
+            print("\n")
+            print("Potential time error. Please check if start and end times relevant.")
+            non_saved_log.append("ERROR IN MAIN LOOP! ")
             continue
         # parse data
         all_data = np.array(data['data']['result'][0]['values'])
@@ -155,16 +179,21 @@ for name, col in df.iterrows():
     
             temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
             #titles_node.append(query)
+
 # save node exporter data
 try:
     # load data into a dataframe
     df = pd.DataFrame(temp_data2,columns=titles_node)
     # save data in csv format
     df.to_csv('../out/node_metrics.csv')
-    print("Success of extracting node exporter data")
+    print("Node data was successfully saved into the folder named out. ")
     
 except:
-    print("An error occured while loading node data into df or saving to file! ")
+    with open('../var/log.txt', 'w') as f:
+        f.write("An error occured while loading node data into df or saving to file!\n"+ str(datetime.now()))
+        f.write('\n')
+        f.close()
+
 # get data into dataframe object
 # dataframe = pd.DataFrame(save)
 
@@ -191,12 +220,19 @@ try:
     
     # save data into a csv file
     df.to_csv('../out/libvirt_data.csv')
-    print("Success of extracting libvirty data.")
+    print("Libvirt exporter, VM data saved in out folder.")
 
     # save dataframe into new created cs
     # dataframe.to_csv('last_state.csv')
 
 except:
+    with open('../var/log.txt', 'w') as f:
+        f.write("Error while loading the data into or saving the libvirt's csv file!\t"+ str(datetime.now()))
+        f.write('\n')
+        f.close()
 
-    print("Error while loading the data into or saving the libvirt's csv file! ")
-    pass
+with open('../var/log.txt', 'w') as f:
+    for elm in non_saved_log:
+        f.write("\tquery returned no data: \t"+ str(datetime.now()))
+        f.write("\t" + elm)
+        f.write('\n')
