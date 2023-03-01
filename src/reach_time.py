@@ -4,10 +4,16 @@ import requests as rq
 
 
 def give_default_dates(days=1):
-    # get date one day ago
-    currentDateAndTime = datetime.now() - timedelta(days)
+
+    # get date one day ago   
+    currentDateAndTime = datetime.now() - timedelta(days=days+1)
+    # stop the change of number of metrics in the loop in main.py, get stable time because it always is changing  
+    currentDateAndTime -= timedelta(seconds=currentDateAndTime.second, microseconds=currentDateAndTime.microsecond)
+    
     # get date 1 day and 5 mins. ago
-    current_minus_5_min = (datetime.now() - timedelta(days+1,minutes=5))
+    current_minus_5_min = (datetime.now() - timedelta(days=days+2,minutes=5))
+    # stop the change of number of metrics in the loop in main.py, get stable time because it always is changing    
+    current_minus_5_min -= timedelta(seconds=current_minus_5_min.second, microseconds=current_minus_5_min.microsecond)
 
     # turn date into string
     end = str(currentDateAndTime.date())
@@ -23,7 +29,7 @@ def give_default_dates(days=1):
 
     query = "libvirt_domain_block_stats_allocation"
     url_lib = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=3m"
-    query = "node_load1"
+    query="node_load1"
     url_node = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=30s"
 
     # get data using api
@@ -39,7 +45,7 @@ def give_default_dates(days=1):
     if len(data_node['data']['result']) == 0 or len(data_lib['data']['result']) == 0:
 
         return give_default_dates(days=days+1)
-    # return processed dates             
+    # return processed dates
     return start, end
 
 
