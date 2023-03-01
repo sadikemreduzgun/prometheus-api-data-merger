@@ -1,1 +1,34 @@
 Here is extracted data
+Node Exporter
+Aşağıdaki 75 node querysinden 8 tane node querysi server_ip:9100'de çalışmamaktadır. Ama localhost:9100'de çok güzel veriler vermektedir.
+Hepsi aynı şekildedir.
+
+"Power supply" verisini sadece localhost:9100 den alabiliyor, node exporterdan alamıyor: node_power_supply_voltage_volt, node_power_supply_online gibi queryleri.
+"Process schedule stats Running" verisi de aynı şekilde. node_schedstat_running_seconds_total
+"Process schedule stats Waiting" verisi de aynı şekilde node_schedstat_waiting_seconds_total
+"Throttle cooling device" de aynı şekilde node_cooling_device_cur_state
+"Softnet Packets Processed" ve "Softnet Packets Dropped"  verisi de aynı şekilde irate(node_softnet_processed_total{instance="$node",job="$job"}[$__rate_interval])
+"Softnet Out Of quota" verisi de aynı şekilde irate(node_softnet_times_squeezed_total{instance="$node",job="$job"}[$__rate_interval])
+"TCP netstat resets" de aynı şeikde irate(node_netstat_Tcp_OutRsts[5s])
+
+
+Libvirt Exporter
+b tipi hatalar: sürekli 0 datası veriyor
+31 queryden 17 si hatalıydı 6sı çözüldü
+"Network Traffic" success
+"Rate of Packages received on a network interface" success
+"Network dropped packages number" b problem tipi
+"Network packages number of errors received" b tipi
+"Write Requests to a block device" b tipi
+"Read Requests to a block device" b tipi
+"Bytes written to a block device" b tipi
+"Bytes that are readed from a block device" b tipi
+"IOPS Read" ve "IOPS Write" b tipi
+"Throughput read ve write" b tipi
+"Network Recieved data (RX)" success
+"Network Sent data (TX)" success
+"Network Received packets" "Network sent packets" success
+"Error received on received packets" b tipi
+"Error received on packets sent" b tipi
+"Drops of received packets" "Drops of packets Sent" b tipi
+"Running VM number" success 
