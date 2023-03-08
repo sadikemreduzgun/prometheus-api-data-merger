@@ -5,7 +5,7 @@ from reach_time import *
 
 
 # a function to return interfaces and jobs, gets functionally-updatet start time
-def return_interface(which="",start=give_default_dates()[0],end=give_default_dates()[1]):
+def return_instance(which="",start=give_default_dates()[0],end=give_default_dates()[1]):
     
     if which == "node":
         # assign query
