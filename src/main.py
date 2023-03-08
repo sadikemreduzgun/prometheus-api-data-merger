@@ -3,6 +3,7 @@ import pandas as pd
 import requests as rq
 import numpy as np
 from datetime import date
+from reach_time import *
 
 
 # read csv which contains queries
@@ -14,7 +15,7 @@ df = pd.read_csv('../data/all_queries.csv')
 #end = "2023-02-21T19:59:25.479Z"
 #start = "2023-02-27T06:22:25.479Z"
 #end= "2023-02-28T07:39:25.479Z"
-start, end = give_default_dates(0,1,30)
+start, end = give_default_dates(day_back=0,hour_back=1,min_back=30)
 queries = []
 # define default step and query function step
 step = "20s"
