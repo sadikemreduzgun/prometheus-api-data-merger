@@ -87,11 +87,11 @@ def organize_instance(query, device = reach_device()[0]):
     # if first 4 letters form node, return instance which is created
     if query[0:4] == "node":
         # return instance created by return_instance function
-        return "node", "{instance="+f'{return_jobs_interfaces("node")}'+"}"
+        return "node", "{instance="+f'{return_instance("node")}'+"}"
     # if first 7 letters form libvirt, return instance which is created
     if query[0:7] == "libvirt":
         # return instance created bt return_instance function
-        return "libvirt","{instance=" + f'{return_jobs_interfaces("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
+        return "libvirt","{instance=" + f'{return_instance("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
 
     
     # if not continue searching
@@ -109,11 +109,11 @@ def organize_instance(query, device = reach_device()[0]):
         # if "node" is found, return instance as stated
         if check_word == "node":
             
-            return "node", "{instance="+f'{return_jobs_interfaces("node")}'+"}"
+            return "node", "{instance="+f'{return_instance("node")}'+"}"
 
         # if "libvirt" is found, return instance as stated
         if check_word == "libvirt":
             
-            return  "libvirt", "{instance=" + f'{return_jobs_interfaces("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
+            return  "libvirt", "{instance=" + f'{return_instance("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
     # if can't be found return error
     return -1, -1
