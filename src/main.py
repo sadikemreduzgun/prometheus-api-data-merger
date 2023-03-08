@@ -14,7 +14,7 @@ df = pd.read_csv('../data/all_queries.csv')
 #end = "2023-02-21T19:59:25.479Z"
 #start = "2023-02-27T06:22:25.479Z"
 #end= "2023-02-28T07:39:25.479Z"
-start, end = give_default_dates()
+start, end = give_default_dates(0,1,30)
 queries = []
 # define default step and query function step
 step = "20s"
@@ -30,9 +30,12 @@ non_saved_log = []
 # define lists for to store column names
 titles = ["time_stamp"]
 titles_node = ["time_stamp"]
+titles_node_less = []
 title_count_lib=0
 # read queries, organize them and gather their values
 #df.iloc[:, 2], df.iloc[:, 1]
+handling_bool = True
+
 for name, col in df.iterrows():
     
     query_name = col["query_name"]    
@@ -150,6 +153,7 @@ for name, col in df.iterrows():
         metrics = rq.get(url)
         # load data into json
         data = metrics.json()
+    
         try:
             if len(data['data']['result']) == 0:
                 non_saved_log.append(str(datetime.now())+"\tnode -> " + query_name)
@@ -159,37 +163,72 @@ for name, col in df.iterrows():
             non_saved_log.append("an error occured:\tERROR IN MAIN LOOP! ")
             continue
         # parse data
+        print("\n\n")
+        print(query_name)
+        print("number of data: ", len(data['data']['result'][0]['values']))
+
         all_data = np.array(data['data']['result'][0]['values'])
-        
+        print("shape of numpy array: ", all_data.shape)
+        print("len([data][result]): ", len(data['data']['result']))
         # get metric data
         metric = all_data[:, 1][np.newaxis]
         # get time stamp data
         time_stamp = all_data[:, 0][np.newaxis]
-        titles_node.append(query_name)
+        #titles_node.append(query_name)
         # metric = metric.apply(lambda x: GiB(float(x)), axis=1)
         # for executing just once
         
         if two_crap_boolean:
             temp_data2 = np.concatenate((time_stamp.T, metric.T), axis=1)
             two_crap_boolean = False
-
+            titles_node.append(query_name)
         # merge data collectively
         else:
+            # try to concate metrics because if length of metrics are different it returns error
             try:
+                # connect metrics
                 temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
+                # add to columns list of df
+                titles_node.append(query_name)
+            # if metrics length is different, then this is executed to run it without interruption. 
+            #There is a problem like when the start and end time are close to the time now, we have a lenght which is 4 smaller than normal.
             except:
-                print(-1)
+                # add query name to columns's list
+                titles_node_less.append(query_name)
+                # execute once to have something to concatenate
+                if handling_bool:
+                    temp_data3 = metric.T
+                    handling_bool = False
+                # conneect metrics
+                else:
+                    temp_data3 = np.concatenate((temp_data3, metric.T), axis=1)
+                
             #titles_node.append(query)
 
+            
 # save node exporter data
 try:
     # load data into a dataframe
+    try:
+        df_less = pd.DataFrame(temp_data3, columns=titles_node_less)
+    except:
+        pass
+    
+    #df = pd.DataFrame(temp_data2)
     df = pd.DataFrame(temp_data2,columns=titles_node)
     # save data in csv format
-    df.to_csv('../out/node_metrics.csv')
+    try:
+        df_all = pd.concat([df,df_less], axis=1)
+    except:
+        pass
+    
+    #df.to_csv('../out/node_metrics.csv')
     print("Node data was successfully saved into the folder named out. ")
+    #df.to_csv('../out/less_node.csv')
+    df_all.to_csv("../out/node_data.csv")
     
 except:
+    # print error in log.txt file
     with open('../var/log.txt', 'w') as f:
         f.write("An error occured while loading node data into df or saving to file! "+ str(date.today()))
         f.write('\n')
@@ -202,7 +241,8 @@ except:
 
 try:
     # load save data into a dataframe
-    df = pd.DataFrame(save, columns=titles)
+    df = pd.DataFrame(save)
+    #df = pd.DataFrame(save, columns=titles)
     # turn df into a list to change order of columns
     my_list = df.columns.tolist()
     # load names of devices into a list
@@ -211,7 +251,8 @@ try:
         for i in range(int(len(df)/len(devices))):
        
             names_devices.append(devices[c])
-    
+        
+    # print names of devices in the dataframe
     df["names"] = names_devices
 
     # change the order of colums of dataframe
@@ -225,14 +266,16 @@ try:
 
     # save dataframe into new created cs
     # dataframe.to_csv('last_state.csv')
-
+    
+# print in log file if any problem occurs
 except:
     with open('../var/log.txt', 'a') as f:
         f.write("Error while loading the data into or saving the libvirt's csv file! "+ str(date.today()))
         f.write('\n')
         f.close()
 
-with open('../var/log.txt', 'w') as f:
+# print errors in log.txt file
+with open('../var/log.txt', 'a') as f:
     for elm in non_saved_log:
         if "ERROR" in elm.split(" "):
             f.write(elm)
