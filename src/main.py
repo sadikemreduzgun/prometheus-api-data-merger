@@ -164,13 +164,13 @@ for name, col in df.iterrows():
             non_saved_log.append("an error occured:\tERROR IN MAIN LOOP! ")
             continue
         # parse data
-        print("\n\n")
-        print(query_name)
-        print("number of data: ", len(data['data']['result'][0]['values']))
+        #print("\n\n")
+        #print(query_name)
+        #print("number of data: ", len(data['data']['result'][0]['values']))
 
         all_data = np.array(data['data']['result'][0]['values'])
-        print("shape of numpy array: ", all_data.shape)
-        print("len([data][result]): ", len(data['data']['result']))
+        #print("shape of numpy array: ", all_data.shape)
+        #print("len([data][result]): ", len(data['data']['result']))
         # get metric data
         metric = all_data[:, 1][np.newaxis]
         # get time stamp data
