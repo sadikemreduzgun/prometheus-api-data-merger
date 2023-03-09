@@ -46,7 +46,7 @@ def give_default_dates(day_back=0, hour_back=3, min_back=30):
     # find a date which gives data recursively 
     if len(data_node['data']['result']) == 0 or len(data_lib['data']['result']) == 0:
         print("no data")
-        return give_default_dates(days=day_back+1)
+        return give_default_dates(day_back=day_back+1)
     # return processed dates
     return start, end
 
