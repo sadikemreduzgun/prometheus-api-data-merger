@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
 import json
 import requests as rq
+import random
 
 
-def give_default_dates(day_back=0, hour_back=3, min_back=30):
-
+def give_default_dates(day_back=0, hour_back=0, min_back=30):
+    # define a variable to go recursively if data point isn't found
+    recursive_hour_back = 3
     # get date one day ago   
-    end_time = datetime.now() - timedelta(days=day_back, hours=1)
+    end_time = datetime.now() - timedelta(days=day_back, hours=0)
     # stop the change of number of metrics in the loop in main.py, get stable time because it always is changing  
     end_time -= timedelta(seconds=end_time.second, microseconds=end_time.microsecond)
     
@@ -19,14 +21,13 @@ def give_default_dates(day_back=0, hour_back=3, min_back=30):
     end = str(end_time.date())
     # turn date into the format which is used on url
     end = end + "T"
-    end = end + str(end_time.time())[0:12] + "Z"
-
+    end = end + str(end_time.time())[0:12]+"."+ str(end_time.microsecond) + "Z"
     # turn end date into string
     start = str(start_time.date())
     # turn end date into the format which is used on url
     start = start + "T"
-    start = start + str(start_time.time())[0:12] + "Z"
-
+    start = start + str(start_time.time())[0:12]+"."+str(start_time.microsecond) + "Z"
+    print(start)
     query = "libvirt_domain_block_stats_allocation"
     url_lib = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=3m"
     query="node_load1"
@@ -43,14 +44,18 @@ def give_default_dates(day_back=0, hour_back=3, min_back=30):
     print(len(data_node['data']['result']))
     
     #print(data_lib['data']['result'][0]['values'])
-    # find a date which gives data recursively 
+    # find a date which gives data recursively by going recursive_hour_back hours back every time
     if len(data_node['data']['result']) == 0 or len(data_lib['data']['result']) == 0:
         print("no data")
-        return give_default_dates(day_back=day_back+1)
+        #hour_random = random.randint(3,24)
+        #min_random = random.randint(0,60)
+        
+        return give_default_dates(day_back, hour_back+recursive_hour_back)
+    
     # return processed dates
     return start, end
 
 
 # 2023-02-21T10:59:25.479Z
 # Output: The current date and time is 2022-03-19 10:05:39.482383
-#give_default_dates()
+#print(give_default_dates(1))
