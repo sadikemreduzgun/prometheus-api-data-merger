@@ -18,7 +18,7 @@ df = pd.read_csv('../data/all_queries.csv')
 start, end = give_default_dates(day_back=0,hour_back=1,min_back=30)
 queries = []
 # define default step and query function step
-step = "20s"
+step = "2s"
 step_func = "5s"
 # define a boolean to be used to run a statement for once
 one_crap_boolean = True
