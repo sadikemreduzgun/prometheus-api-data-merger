@@ -33,6 +33,6 @@ pip install -r requirements.txt
 ```
 
 ## To Run
-👓 Just run main.py Python file after getting required packages downloaded. If everything goes correctly, you will see 2 csv files which contain metrics data in the folder named as "out". If some error occurs, error will be printed. 
+👓 Just run main.py Python file after getting required packages downloaded. If everything goes correctly, you will see 2 csv files which contain metrics data in the folder named as "out". If some error occurs, error will be written in var/log.txt. 
 
 ##### DO NOT HESITATE WRITING ME WHEN A PROBLEM OCCURED: sed3718@gmail.com
