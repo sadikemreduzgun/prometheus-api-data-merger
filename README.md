@@ -28,7 +28,7 @@ six==1.16.0
 urllib3==1.26.14
 ```
 
-### to install:
+### To Install:
 ```pip
 pip install -r requirements.txt
 ```
