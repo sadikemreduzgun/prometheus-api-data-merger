@@ -1,4 +1,4 @@
-,query_name,query
+,query_name, query
 0,CPU Busy,"(sum by(instance) (irate(node_cpu_seconds_total{instance=""$node"",job=""$job"", mode!=""idle""}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])))) * 100"
 1,Sys Load all cores,"avg(node_load5{instance=""$node"",job=""$job""}) /  count(count(node_cpu_seconds_total{instance=""$node"",job=""$job""}) by (cpu)) * 100"
 2,RAM Used,"((node_memory_MemTotal_bytes{instance=""$node"",job=""$job""} - node_memory_MemFree_bytes{instance=""$node"",job=""$job""}) / (node_memory_MemTotal_bytes{instance=""$node"",job=""$job""} )) * 100"
