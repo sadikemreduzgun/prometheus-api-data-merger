@@ -1,286 +1,86 @@
-from organizer import *
-import pandas as pd
-import requests as rq
-import numpy as np
-from datetime import date
-from reach_time import *
+from check import check_installed
+from merge_processes import *
 
 
-# read csv which contains queries
-df = pd.read_csv('../data/all_queries.csv')
+node_exist, libv_exist, win_exist = check_installed()
+len_node, len_lib = give_len()
+# get time_limit
+# prometheus can't go over 11000 data using request for longer time periods time period must be divided
+time = int(step[0:-1])
+if step[len(step)-1] == "m":
+    time *= 60
+if step[len(step)-1] == "h":
+    time *= 60*60
 
-# get default-recent time data
+temp1, temp2, temp3, temp4, time_limit = time_div_step(day, hour, minute,second_in, time)
+del temp1, temp2, temp3, temp4
+hii = 1
+print(hour)
+# make day 0 to prevent clutter
+hold_day = 0
+hold_hour = hour+24*day
+hold_minute = minute
+# day w day-hold1
+print(len_node)
+now = datetime.now()
+# 0,1,2,3...,divider-1, runs divider times to run for different servers
+for counted_time_divs in range(len_node):
+    crap_bool = True
+    # make day 0 to prevent clutter
+    hold_day = 0
+    hold_hour = hour + 24 * day
+    hold_minute = minute
+    hold_sec = second_in
+    start = True
+    times = []
 
-#start = "2023-02-21T10:59:25.479Z"
-#end = "2023-02-21T19:59:25.479Z"
-#start = "2023-02-27T06:22:25.479Z"
-#end= "2023-02-28T07:39:25.479Z"
-start, end = give_default_dates(day_back=0,hour_back=1,min_back=30)
-queries = []
-# define default step and query function step
-step = "2s"
-step_func = "5s"
-# define a boolean to be used to run a statement for once
-one_crap_boolean = True
-# get Virtual machine names 
-devices = reach_device(start,end)
-# a weird boolean too, to execute a statement once
-two_crap_boolean = True
-# define a list to store query names which returns no data and save them in var/log.txt
-non_saved_log = []
-# define lists for to store column names
-titles = ["time_stamp"]
-titles_node = ["time_stamp"]
-titles_node_less = []
-title_count_lib=0
-# read queries, organize them and gather their values
-#df.iloc[:, 2], df.iloc[:, 1]
-handling_bool = True
-
-for name, col in df.iterrows():
+    if counted_time_divs==0:
+        continue
     
-    query_name = col["query_name"]    
-    query = col["query"]
-    # booleans to execute a statement for each loop turn
-    three_crap_boolean = True
-    four_crap_boolean = True
-
-    # get checking data
-    check, instance = organize_instance(query)
-    # go depending on data
-    if check == "libvirt":
-        # a counter of device loop
-        in_count = 1
-        # processes of devices taken by a function
-        for device in devices:
-            # get instance to run curly organizer function
-            temp, instance = organize_instance(query, device)
-            # run curly organizer delete instance and replace it
-            url = curly_organizer(query, instance, step_func)
-            # get data after organizing the url
-            url = organize_url(url, start, end,step)
-            # get data using requests modul
-            metrics = rq.get(url)
-            # turn data into dictionary
-            metrics = metrics.json()
-            # hold metrics data
-            temp_metrics = metrics
-            # move depending on if data is reached
-            
-            try:
-                if len(temp_metrics['data']['result']) == 0:
-                    now = str(datetime.now())
-                    # save queries which returns no data
-                    if query_name not in queries:     
-                        queries.append(query_name)
-                        non_saved_log.append(str(datetime.now()) + "\tlibvirt -> " + query_name)
-                        continue
-                else:
-                    # parse and dig into data
-                    data = metrics['data']['result'][0]['values']
-                    # load data into a numpy array
-                    data = np.array(data)
-                    # get metric values
-                    metric = data[:, 1][np.newaxis]
-                    # get time stamp values
-                    time_stamp = data[:, 0][np.newaxis]
-                    # for executing for 4 times
-                    if one_crap_boolean:
-                    # to create following structure:
-                        """ time stamp: ts, metric = m
-                        ts (connect) m = a                          a
-                                                                (connect)                   
-                        ts (connect) m = b                          b        =  PART
-                                                                (connect)
-                        ts (connect) m = c                          c
-                        """
-                        if in_count == 4:
-                            one_crap_boolean = False
-                            # 3 vertical, 4 horizontal connections done
-                        # horizontally connect
-                        temp_data = np.concatenate((time_stamp.T, metric.T), axis=1)
-
-                        # execute for once for first element to connect second element
-                        if three_crap_boolean:
-                            save = temp_data
-                            three_crap_boolean = False
-                            titles.append(query)
-                        # vertically connect horizontally connected elements
-                        else:
-                            save = np.concatenate((save, temp_data), axis=0)
-
-                    # merge data collectively
-                    else:
-                        # to create following structure:
-                        """ Connecting to PART above
-                                           metric1
-                                          (connect)
-                            PART = PART +  metric2
-                                          (connect)
-                                           metric3
-                        """
-                        # run once and store first element
-                        if four_crap_boolean:
-                            saves = metric.T 
-                            four_crap_boolean = False
-                        # perform operation mentioned above
-                        else:
-                            saves = np.concatenate((saves, metric.T), axis=0)
-                        # if devices' loops' end is reached, add connected metrics
-                        if in_count == len(devices):
-                            save = np.concatenate((save, saves), axis=1)
-                            # append queries into titles
-                            titles.append(query_name)
-
-            except:
-                print("Potential time error. Please check if start and end time relevant. ")
-                non_saved_log.append("an error occured: \t" + str(datetime.now()) + "\t ERROR IN MAIN LOOP!")
-            # if there is data, go on
- 
-            # increment at the end of devices loop
-            in_count += 1
-
-    # go depending on data
-    if check == "node":
-        # get instance to run curly organizer function
-        temp, instance = organize_instance(query)
-        # run curly organizer delete instance and replace it
-        url = curly_organizer(query, instance, step_func)
-        # get data after organizing the url
-        url = organize_url(url, start, end, step)
-        # hold URL to be used later
-        hold = url
-        # get data using requests modul
-        metrics = rq.get(url)
-        # load data into json
-        data = metrics.json()
-    
+    for count_time in range(time_limit):
+        # get divided time periods and go back as them, give date as it
         try:
-            if len(data['data']['result']) == 0:
-                non_saved_log.append(str(datetime.now())+"\tnode -> " + query_name)
-                continue
+
+            day1, hour1, minute1, sec1, time_div = time_div_step(hold_day, hold_hour, hold_minute, hold_sec, time)
+        # get start, end dates of time interval divisions
+            print(day1, hour1, minute1, sec1, hold_sec)
+            hold_small_step = time
+            if start==True:
+                hold_small_step = 0
+                start = False
+            print(hold_small_step, time)
+            start, end = give_default_dates(now, day_back=hold_day, hour_back=hold_hour, min_back=hold_minute,
+                                        sec_back=(hold_sec - hold_small_step), end_recent_day=hold_day,
+                                        end_recent_hour=hold_hour - hour1, end_recent_min=hold_minute - minute1,
+                                        end_recent_sec=hold_sec-sec1)
+            times.append(start)
+            times.append(end)
+            print(start,end)
+            node_df,titles_node, name, hii = prepare_node(start,end,step,step_func,counted_time_divs,hii)
+        #print("shape:-----------------", node_data.shape)
+        #node_data.columns = titles_node
+        #node_df = node_data
+            print(node_df)
+        # node_df = pd.DataFrame(node_data)
+            node_df["time_stamp"] = node_df.apply(lambda x: datetime.fromtimestamp(int(x["time_stamp"])), axis=1)
+            if crap_bool:
+                hold_data = node_df
+                crap_bool = False
+
+            else:
+                hold_data = pd.concat((hold_data,node_df),axis=0,ignore_index=True)
+
+            hold_day = day1
+            hold_hour = hold_hour - hour1
+            hold_minute = hold_minute - minute1
+            hold_sec -= sec1
+
         except:
-            print("Potential time error. Please check if start and end times relevant.")
-            non_saved_log.append("an error occured:\tERROR IN MAIN LOOP! ")
-            continue
-        # parse data
-        #print("\n\n")
-        #print(query_name)
-        #print("number of data: ", len(data['data']['result'][0]['values']))
-
-        all_data = np.array(data['data']['result'][0]['values'])
-        #print("shape of numpy array: ", all_data.shape)
-        #print("len([data][result]): ", len(data['data']['result']))
-        # get metric data
-        metric = all_data[:, 1][np.newaxis]
-        # get time stamp data
-        time_stamp = all_data[:, 0][np.newaxis]
-        #titles_node.append(query_name)
-        # metric = metric.apply(lambda x: GiB(float(x)), axis=1)
-        # for executing just once
-        
-        if two_crap_boolean:
-            temp_data2 = np.concatenate((time_stamp.T, metric.T), axis=1)
-            two_crap_boolean = False
-            titles_node.append(query_name)
-        # merge data collectively
-        else:
-            # try to concate metrics because if length of metrics are different it returns error
-            try:
-                # connect metrics
-                temp_data2 = np.concatenate((temp_data2, metric.T), axis=1)
-                # add to columns list of df
-                titles_node.append(query_name)
-            # if metrics length is different, then this is executed to run it without interruption. 
-            #There is a problem like when the start and end time are close to the time now, we have a lenght which is 4 smaller than normal.
-            except:
-                # add query name to columns's list
-                titles_node_less.append(query_name)
-                # execute once to have something to concatenate
-                if handling_bool:
-                    temp_data3 = metric.T
-                    handling_bool = False
-                # conneect metrics
-                else:
-                    temp_data3 = np.concatenate((temp_data3, metric.T), axis=1)
-                
-            #titles_node.append(query)
-
-            
-# save node exporter data
-try:
-    # load data into a dataframe
+            print("wuuff")
     try:
-        df_less = pd.DataFrame(temp_data3, columns=titles_node_less)
+        print(hold_data.shape)
+        print(counted_time_divs)
+        hold_data.to_csv(f"../../out/{name}_start_{times[0]}_end_{times[len(times)-1]}.csv")
     except:
+
         pass
-    
-    #df = pd.DataFrame(temp_data2)
-    df = pd.DataFrame(temp_data2,columns=titles_node)
-    # save data in csv format
-    try:
-        df_all = pd.concat([df,df_less], axis=1)
-    except:
-        pass
-    
-    #df.to_csv('../out/node_metrics.csv')
-    print("Node data was successfully saved into the folder named out. ")
-    #df.to_csv('../out/less_node.csv')
-    df_all.to_csv("../out/node_data.csv")
-    
-except:
-    # print error in log.txt file
-    with open('../var/log.txt', 'w') as f:
-        f.write("An error occured while loading node data into df or saving to file! "+ str(date.today()))
-        f.write('\n')
-        f.close()
-
-# get data into dataframe object
-# dataframe = pd.DataFrame(save)
-
-# save libvirt exporter data
-
-try:
-    # load save data into a dataframe
-    df = pd.DataFrame(save)
-    #df = pd.DataFrame(save, columns=titles)
-    # turn df into a list to change order of columns
-    my_list = df.columns.tolist()
-    # load names of devices into a list
-    names_devices = []
-    for c in range(len(devices)):
-        for i in range(int(len(df)/len(devices))):
-       
-            names_devices.append(devices[c])
-        
-    # print names of devices in the dataframe
-    df["names"] = names_devices
-
-    # change the order of colums of dataframe
-    cols = df.columns.tolist()
-    cols = cols[:1] + cols[-1:] + cols[1:-1]
-    df = df[cols]
-    
-    # save data into a csv file
-    df.to_csv('../out/libvirt_data.csv')
-    print("Libvirt exporter, VM data saved in out folder.")
-
-    # save dataframe into new created cs
-    # dataframe.to_csv('last_state.csv')
-    
-# print in log file if any problem occurs
-except:
-    with open('../var/log.txt', 'a') as f:
-        f.write("Error while loading the data into or saving the libvirt's csv file! "+ str(date.today()))
-        f.write('\n')
-        f.close()
-
-# print errors in log.txt file
-with open('../var/log.txt', 'a') as f:
-    for elm in non_saved_log:
-        if "ERROR" in elm.split(" "):
-            f.write(elm)
-        else: 
-            f.write("query returned no data: ")
-            f.write("\t" + elm)
-        f.write('\n')
