@@ -80,7 +80,7 @@ for counted_time_divs in range(len_node):
     try:
         print(hold_data.shape)
         print(counted_time_divs)
-        hold_data.to_csv(f"../../out/{name}_start_{times[0]}_end_{times[len(times)-1]}.csv")
+        hold_data.to_csv(f"../out/{name}_start_{times[0]}_end_{times[len(times)-1]}.csv")
     except:
 
         pass
