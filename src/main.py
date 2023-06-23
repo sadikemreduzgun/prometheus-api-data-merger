@@ -33,9 +33,6 @@ for counted_time_divs in range(len_node):
     hold_sec = second_in
     start = True
     times = []
-
-    if counted_time_divs==0:
-        continue
     
     for count_time in range(time_limit):
         # get divided time periods and go back as them, give date as it
